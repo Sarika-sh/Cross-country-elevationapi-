@@ -1,10 +1,11 @@
-// script.js
 let googleMapsLoaded = false;
 let elevator;
 
 window.initMap = function () {
   googleMapsLoaded = true;
   elevator = new google.maps.ElevationService();
+  console.log("Google Maps API loaded and initialized");  // Add this line for debugging
+
 
   // Start drawing elevation after Google Maps JS API is ready
   drawElevationData();
@@ -20,17 +21,22 @@ const svgHeight = 300;
 const plotWidth = svgWidth - margin.left - margin.right;
 const plotHeight = svgHeight - margin.top - margin.bottom;
 
+// Define the default IDs or fetch from URL
 const defaultIds = ["gcptey", "vdwk2d", "wplcez"];
 const queryIds = new URLSearchParams(window.location.search).get("ids");
 const courseIds = queryIds ? queryIds.split(",") : defaultIds;
 
+// Define color palette
 const colorPalette = ["blue", "red", "green", "orange", "purple", "teal", "brown"];
+
+// Initialize the routes
 const routes = courseIds.map((id, index) => ({
   file: `https://api.crosscountryapp.com/courses/${id}/geometries`,
   id: id,
   color: colorPalette[index % colorPalette.length],
 }));
 
+// Haversine distance function
 function haversineDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // km
   const toRad = deg => deg * Math.PI / 180;
@@ -59,6 +65,7 @@ function getElevation(lat, lng) {
   });
 }
 
+// Draw Axes
 function drawAxes(maxDist, minElev, maxElev) {
   // Clear existing axes if any
   [...svg.querySelectorAll(".axis-label, .axis-tick")].forEach(el => el.remove());
@@ -123,6 +130,7 @@ function drawAxes(maxDist, minElev, maxElev) {
   }
 }
 
+// Draw Course
 async function drawCourse(route, elevations, distances, minElev, maxElev, maxDist) {
   const elevRange = maxElev - minElev || 1;
 
@@ -132,6 +140,8 @@ async function drawCourse(route, elevations, distances, minElev, maxElev, maxDis
     return [x, y];
   });
 
+   console.log("Points for drawing course:", points); // check points
+
   const pathData = points.map((p, i) => i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`).join(" ");
   const path = document.createElementNS(svgNS, "path");
   path.setAttribute("d", pathData);
@@ -140,6 +150,8 @@ async function drawCourse(route, elevations, distances, minElev, maxElev, maxDis
   path.setAttribute("stroke-width", "2");
   path.setAttribute("class", `route-line route-${route.id}`);
   svg.appendChild(path);
+
+   console.log("Path created for route:", pathData); // to check for debugging
 
   const shaded = document.createElementNS(svgNS, "path");
   shaded.setAttribute("d", pathData + ` L ${points[points.length - 1][0]} ${svgHeight - margin.bottom} L ${points[0][0]} ${svgHeight - margin.bottom} Z`);
@@ -176,6 +188,7 @@ async function drawCourse(route, elevations, distances, minElev, maxElev, maxDis
   });
 }
 
+// Create Legend
 function createLegend(routes) {
   const legend = document.getElementById("legend");
   legend.innerHTML = "";
@@ -194,7 +207,7 @@ function createLegend(routes) {
           line.style.display = "none";
           item.classList.add("inactive");
         } else {
-          line.style.display = "";
+          line.style.display = "block";
           item.classList.remove("inactive");
         }
       });
@@ -204,6 +217,7 @@ function createLegend(routes) {
   });
 }
 
+// Main function to draw elevation data
 async function drawElevationData() {
   if (!googleMapsLoaded) {
     // Wait and retry
@@ -212,7 +226,6 @@ async function drawElevationData() {
   }
 
   svg.innerHTML = ""; // Clear previous drawing
-
   createLegend(routes);
 
   // Fetch route geometry data
@@ -225,7 +238,15 @@ async function drawElevationData() {
       })
   );
 
-  const routeDatas = await Promise.all(routePromises);
+  // Wait for all route data to be fetched
+  console.log("Fetching route data...");
+const routeDatas = await Promise.all(routePromises);
+console.log("Fetched route data:", routeDatas);
+
+
+  // Log route data to debug if it's correct
+    console.log("Route Data:", JSON.stringify(routeDatas, null, 2));
+
 
   // Process all routes to get elevations and distances
   const elevationResults = [];
@@ -261,12 +282,14 @@ async function drawElevationData() {
       }
     }
 
-    // Get elevations using ElevationService, one by one (slow but reliable)
+    // Get elevations using ElevationService
     const elevations = [];
     for (const [lon, lat] of coords) {
       const elev = await getElevation(lat, lon);
       elevations.push(elev === null ? 0 : elev);
     }
+
+    console.log("Elevations fetched:", elevations);// check the elevation data
 
     elevationResults.push({ route, distances, elevations });
   }
