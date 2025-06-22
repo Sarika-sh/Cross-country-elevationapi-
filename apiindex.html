@@ -10,7 +10,7 @@
 <body>
   <h1 class="graph-label">Elevation Profiles</h1>
 
-    <!-- SVG Element where the graph will be drawn -->
+  <!-- SVG Element where the graph will be drawn -->
   <svg id="elevation-chart" viewBox="0 0 800 300" width="800" height="300"></svg>
 
   <!-- Tooltip that will show information on hover -->
@@ -19,13 +19,17 @@
   <!-- Route Toggle Legend -->
   <div id="legend" class="route-toggle"></div>
 
+  <!-- Map where the Google map will be displayed -->
+  <div id="map" style="height: 500px; width: 100%;"></div>
+
   <!-- Load Google Maps JS API with callback -->
   <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3atakTNdVy8cn-CExnQvJc2Ns9PyN1pE&callback=initMap&loading=async"
     async
     defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsNikZE5WT807istWFnmiJycqMHGfGodw&callback=initMap">
-  </script>
+  ></script>
 
+  <!-- Link to your main JS script -->
   <script src="script.js"></script>
 </body>
 </html>
