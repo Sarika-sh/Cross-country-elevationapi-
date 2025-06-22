@@ -156,7 +156,7 @@ async function drawCourse(route, elevations, distances, minElev, maxElev, maxDis
   const shaded = document.createElementNS(svgNS, "path");
   shaded.setAttribute("d", pathData + ` L ${points[points.length - 1][0]} ${svgHeight - margin.bottom} L ${points[0][0]} ${svgHeight - margin.bottom} Z`);
   shaded.setAttribute("fill", route.color);
-  shaded.setAttribute("opacity", 0.1);
+  shaded.setAttribute("opacity", 0.3);
   svg.insertBefore(shaded, path);
 
   points.forEach((p, i) => {
@@ -286,7 +286,7 @@ console.log("Fetched route data:", routeDatas);
     const elevations = [];
     for (const [lon, lat] of coords) {
       const elev = await getElevation(lat, lon);
-      elevations.push(elev === null ? 0 : elev);
+      elevations.push(elev === null ? undefined : elev); // using undefined instead of 0 for missing data
     }
 
     console.log("Elevations fetched:", elevations);// check the elevation data
