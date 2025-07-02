@@ -8,27 +8,16 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <h1 class="graph-label">Elevation Profiles</h1>
+  <h1>Elevation Profiles</h1>
+  <div id="legend"></div>
+  <svg id="elevation" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+  <div id="tooltip" class="tooltip"></div>
 
-  <!-- SVG Element where the graph will be drawn -->
-  <svg id="elevation-chart" viewBox="0 0 800 300" width="800" height="300"></svg>
-
-  <!-- Tooltip that will show information on hover -->
-  <div id="tooltip"></div>
-
-  <!-- Route Toggle Legend -->
-  <div id="legend" class="route-toggle"></div>
-
-  <!-- Map where the Google map will be displayed -->
-  <div id="map" style="height: 500px; width: 100%;"></div>
-
-  <!-- Load Google Maps JS API with callback -->
-      <script
+    <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3atakTNdVy8cn-CExnQvJc2Ns9PyN1pE&callback=initMap&v=weekly"
       defer
     ></script>
-
-  <!-- Link to your main JS script -->
+  
   <script src="script.js"></script>
 </body>
 </html>
